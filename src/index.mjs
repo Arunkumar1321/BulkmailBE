@@ -7,10 +7,13 @@ import {validationResult,checkSchema,matchedData} from "express-validator"
 import mongoose from "mongoose"
 import { Emailrecord,user } from "./Mbschemas.mjs";
 import {hashpassword,compare} from "./Helper.mjs";
-import dns from "node:dns/promises"
+import dns from "dns"
+import dnsPromises from "dns/promises";
+dns.setDefaultResultOrder("ipv4first");
 dns.setServers(["8.8.8.8","1.1.1.1"])
 
 const app = express();
+
 app.use(express.json())
 app.use(cors())
 app.listen(process.env.PORT || 3000,()=>{
@@ -24,7 +27,6 @@ app.get("/", (req, res) => {
     console.log("Test route hit");
     res.send("Backend working");
 });
-
 app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const result = validationResult(req)
  
@@ -44,16 +46,15 @@ const emaillist=req.body.emaillist
   },
   family: 4
 });
-try {
-    await transporter.verify();
-    console.log("SMTP Verified");
-} catch(err) {
-    console.error("Verify Error:", err);
-    return res.status(500).json({
-        success:false,
-        error: err.message
-    });
-}
+await transporter.verify();
+const info = await transporter.sendMail({
+  from: process.env.EMAIL,
+  to: process.env.EMAIL,
+  subject: "Test",
+  text: "Hello"
+});
+
+console.log(info);
 
  console.log("Before sendMail");
 new Promise (async function(resolve,reject){
