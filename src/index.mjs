@@ -59,6 +59,7 @@ resolve("success")
 console.log("After sendMail");
 }
 catch(err){
+ console.log(err)
  reject("Failed")
 
 }
