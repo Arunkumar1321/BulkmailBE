@@ -74,7 +74,7 @@ catch(err){
 
 
 app.get("/api/history",async(req,res)=>{
-  const list= await Emailrecord.find()
+  const list= await Emailrecord.find().sort({sentAt:-1})
   console.log(list)
   res.json(list)
 })
