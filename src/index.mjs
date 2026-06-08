@@ -20,6 +20,10 @@ app.listen(process.env.PORT || 3000,()=>{
 mongoose.connect(process.env.MONGO_URL).then(()=>{
     console.log("Mongo Db Connected")
 }).catch((err)=>{console.log("MongoDB Failed to connect",err)})
+app.get("/", (req, res) => {
+    console.log("Test route hit");
+    res.send("Backend working");
+});
 
 app.post("/sendmail",checkSchema(textValidator),(req,res)=>{
  const result = validationResult(req)
