@@ -32,12 +32,14 @@ app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const body=matchedData(req)
 const emaillist=req.body.emaillist
    const transporter = nodemailer.createTransport({
- service:'google',
+  service: "gmail",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL,
     pass: process.env.APP_PASSWORD
   }
-});
+})
 console.log("Before email")
 
 new Promise (async function(resolve,reject){
