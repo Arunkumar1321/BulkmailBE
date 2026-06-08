@@ -8,7 +8,6 @@ import mongoose from "mongoose"
 import { Emailrecord,user } from "./Mbschemas.mjs";
 import {hashpassword,compare} from "./Helper.mjs";
 import dns from "dns"
-import {Resend} from "resend"
 dns.setServers(["8.8.8.8","1.1.1.1"])
 
 const app = express();
@@ -33,16 +32,13 @@ app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const body=matchedData(req)
 const emaillist=req.body.emaillist
    const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+ service:'google',
   auth: {
     user: process.env.EMAIL,
     pass: process.env.APP_PASSWORD
-  },
-  family: 4
+  }
 });
-
+console.log("Before email")
 
 new Promise (async function(resolve,reject){
     try{
