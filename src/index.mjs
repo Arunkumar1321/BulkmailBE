@@ -31,6 +31,7 @@ app.post("/sendmail",checkSchema(textValidator),(req,res)=>{
  if(! result.isEmpty()){
     return res.status(400).send({error:result.array()[0].msg})
  }
+     console.log("Validation passed");
  const body=matchedData(req)
 const emaillist=req.body.emaillist
     const transporter = nodemailer.createTransport({
@@ -41,6 +42,7 @@ const emaillist=req.body.emaillist
   }
 
  })
+ console.log("Before sendMail");
 new Promise (async function(resolve,reject){
     try{
       for(var i=0;i<emaillist.length;i++)
@@ -55,7 +57,9 @@ new Promise (async function(resolve,reject){
 console.log(`Email sent to : ${emaillist[i]}`)
 
 }
+
 resolve("success")
+console.log("After sendMail");
 }
 catch(err){
  reject("Failed")
