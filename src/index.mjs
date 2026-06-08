@@ -32,8 +32,8 @@ const emaillist=req.body.emaillist
     const transporter = nodemailer.createTransport({
  service:"gmail",
   auth: {
-    user:process.env.USER,
-    pass:process.env.PASS
+    user:process.env.EMAIL,
+    pass:process.env.APP_PASSWORD
   }
 
  })
