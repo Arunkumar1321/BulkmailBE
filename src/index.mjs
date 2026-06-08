@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
     res.send("Backend working");
 });
 
-app.post("/sendmail",checkSchema(textValidator),(req,res)=>{
+app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const result = validationResult(req)
  
  if(! result.isEmpty()){
