@@ -34,18 +34,27 @@ app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
      console.log("Validation passed");
  const body=matchedData(req)
 const emaillist=req.body.emaillist
-    const transporter = nodemailer.createTransport({
- service:"gmail",
+   const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
-    user:process.env.EMAIL,
-    pass:process.env.APP_PASSWORD
-  }
+    user: process.env.EMAIL,
+    pass: process.env.APP_PASSWORD
+  },
+  family: 4
+});
+try {
+    await transporter.verify();
+    console.log("SMTP Verified");
+} catch(err) {
+    console.error("Verify Error:", err);
+    return res.status(500).json({
+        success:false,
+        error: err.message
+    });
+}
 
- })
- console.log("EMAIL:", process.env.EMAIL);
-console.log("APP_PASSWORD:", process.env.APP_PASSWORD ? "FOUND" : "MISSING");
- await transporter.verify();
-console.log("SMTP Verified");
  console.log("Before sendMail");
 new Promise (async function(resolve,reject){
     try{
