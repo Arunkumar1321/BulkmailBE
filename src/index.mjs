@@ -1,6 +1,5 @@
 import dotenv from "dotenv/config"
 import express from "express"
-import nodemailer from "nodemailer"
 import cors from "cors"
 import {textValidator,signinValidator} from "./Validator.mjs";
 import {validationResult,checkSchema,matchedData} from "express-validator"
@@ -8,6 +7,7 @@ import mongoose from "mongoose"
 import { Emailrecord,user } from "./Mbschemas.mjs";
 import {hashpassword,compare} from "./Helper.mjs";
 import dns from "dns"
+import {Resend} from "resend"
 dns.setServers(["8.8.8.8","1.1.1.1"])
 
 const app = express();
@@ -17,11 +17,10 @@ app.use(cors())
 app.listen(process.env.PORT || 3000,()=>{
     console.log(`Server Connected `)
 } )
-
-
 mongoose.connect(process.env.MONGO_URL).then(()=>{
     console.log("Mongo Db Connected")
 }).catch((err)=>{console.log("MongoDB Failed to connect",err)})
+const resend = new Resend(process.env.RESEND_API_KEY)
 app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const result = validationResult(req)
  
@@ -31,28 +30,18 @@ app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
      console.log("Validation passed");
  const body=matchedData(req)
 const emaillist=req.body.emaillist
-   const transporter = nodemailer.createTransport({
-  service: "gmail",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.APP_PASSWORD
-  }
-})
 console.log("Before email")
 
 new Promise (async function(resolve,reject){
     try{
       for(var i=0;i<emaillist.length;i++)
 {
-  await transporter.sendMail({
-    from:process.env.EMAIL,
-    to:emaillist[i],
-    subject:body.subject,
-    text:body.msg
-    
-})
+  await resend.emails.send({
+    from: "onboarding@resend.dev",
+    to: emaillist[i],
+    subject: body.subject,
+    text: body.msg
+  })
 console.log(`Email sent to : ${emaillist[i]}`)
 
 }
