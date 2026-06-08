@@ -8,8 +8,7 @@ import mongoose from "mongoose"
 import { Emailrecord,user } from "./Mbschemas.mjs";
 import {hashpassword,compare} from "./Helper.mjs";
 import dns from "dns"
-import dnsPromises from "dns/promises";
-dns.setDefaultResultOrder("ipv4first");
+import {Resend} from "resend"
 dns.setServers(["8.8.8.8","1.1.1.1"])
 
 const app = express();
@@ -20,13 +19,10 @@ app.listen(process.env.PORT || 3000,()=>{
     console.log(`Server Connected `)
 } )
 
+
 mongoose.connect(process.env.MONGO_URL).then(()=>{
     console.log("Mongo Db Connected")
 }).catch((err)=>{console.log("MongoDB Failed to connect",err)})
-app.get("/", (req, res) => {
-    console.log("Test route hit");
-    res.send("Backend working");
-});
 app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const result = validationResult(req)
  
@@ -46,23 +42,14 @@ const emaillist=req.body.emaillist
   },
   family: 4
 });
-await transporter.verify();
-const info = await transporter.sendMail({
-  from: process.env.EMAIL,
-  to: process.env.EMAIL,
-  subject: "Test",
-  text: "Hello"
-});
 
-console.log(info);
 
- console.log("Before sendMail");
 new Promise (async function(resolve,reject){
     try{
       for(var i=0;i<emaillist.length;i++)
 {
   await transporter.sendMail({
-    from:"akmirror619@gmail.com",
+    from:process.env.EMAIL,
     to:emaillist[i],
     subject:body.subject,
     text:body.msg
