@@ -42,6 +42,10 @@ const emaillist=req.body.emaillist
   }
 
  })
+ console.log("EMAIL:", process.env.EMAIL);
+console.log("APP_PASSWORD:", process.env.APP_PASSWORD ? "FOUND" : "MISSING");
+ await transporter.verify();
+console.log("SMTP Verified");
  console.log("Before sendMail");
 new Promise (async function(resolve,reject){
     try{
