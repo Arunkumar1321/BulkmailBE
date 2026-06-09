@@ -4,7 +4,7 @@ import cors from "cors"
 import {textValidator,signinValidator} from "./Validator.mjs";
 import {validationResult,checkSchema,matchedData} from "express-validator"
 import mongoose from "mongoose"
-import { TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo"
+import axios from "axios"
 import { Emailrecord,user } from "./Mbschemas.mjs";
 import {hashpassword,compare} from "./Helper.mjs";
 import dns from "dns"
@@ -30,18 +30,22 @@ app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const body=matchedData(req)
 const emaillist=req.body.emaillist
 console.log("Before email")
-const apiInstance = new TransactionalEmailsApi()
-apiInstance.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_KEY)
+
 
 new Promise (async function(resolve,reject){
     try{
       for(var i=0;i<emaillist.length;i++)
 {
-await apiInstance.sendTransacEmail({
+await axios.post("https://api.brevo.com/v3/smtp/email", {
   sender: { email: "ak.d.luffy2026@gmail.com", name: "BulkMail" },
   to: [{ email: emaillist[i] }],
   subject: body.subject,
   textContent: body.msg
+}, {
+  headers: {
+    "api-key": process.env.BREVO_KEY,
+    "Content-Type": "application/json"
+  }
 })
 console.log(`Email sent to : ${emaillist[i]}`)
 
