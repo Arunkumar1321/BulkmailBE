@@ -20,7 +20,6 @@ app.listen(process.env.PORT || 3000,()=>{
 mongoose.connect(process.env.MONGO_URL).then(()=>{
     console.log("Mongo Db Connected")
 }).catch((err)=>{console.log("MongoDB Failed to connect",err)})
-const resend = new Resend(process.env.RESEND_API_KEY)
 app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const result = validationResult(req)
  
