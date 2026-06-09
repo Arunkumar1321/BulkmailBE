@@ -1,10 +1,10 @@
 import dotenv from "dotenv/config"
 import express from "express"
 import cors from "cors"
-import nodemailer from "nodemailer"
 import {textValidator,signinValidator} from "./Validator.mjs";
 import {validationResult,checkSchema,matchedData} from "express-validator"
 import mongoose from "mongoose"
+import * as Brevo from "@getbrevo/brevo"
 import { Emailrecord,user } from "./Mbschemas.mjs";
 import {hashpassword,compare} from "./Helper.mjs";
 import dns from "dns"
@@ -30,25 +30,18 @@ app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const body=matchedData(req)
 const emaillist=req.body.emaillist
 console.log("Before email")
-const transporter = nodemailer.createTransport({
-   host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_EMAIL,
-    pass: process.env.BREVO_KEY
-  }
-})
+const apiInstance = new Brevo.TransactionalEmailsApi()
+apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_KEY )
 
 new Promise (async function(resolve,reject){
     try{
       for(var i=0;i<emaillist.length;i++)
 {
- await transporter.sendMail({
-  from: "akmirror619@gmail.com",
-  to: emaillist[i],
+await apiInstance.sendTransacEmail({
+  sender: { email: "ak.d.luffy2026@gmail.com", name: "BulkMail" },
+  to: [{ email: emaillist[i] }],
   subject: body.subject,
-  text: body.msg
+  textContent: body.msg
 })
 console.log(`Email sent to : ${emaillist[i]}`)
 
