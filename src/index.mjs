@@ -4,7 +4,7 @@ import cors from "cors"
 import {textValidator,signinValidator} from "./Validator.mjs";
 import {validationResult,checkSchema,matchedData} from "express-validator"
 import mongoose from "mongoose"
-import SibApiV3Sdk from "@getbrevo/brevo"
+import { TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo"
 import { Emailrecord,user } from "./Mbschemas.mjs";
 import {hashpassword,compare} from "./Helper.mjs";
 import dns from "dns"
@@ -30,8 +30,8 @@ app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const body=matchedData(req)
 const emaillist=req.body.emaillist
 console.log("Before email")
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi()
-apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_KEY)
+const apiInstance = new TransactionalEmailsApi()
+apiInstance.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_KEY)
 
 new Promise (async function(resolve,reject){
     try{
