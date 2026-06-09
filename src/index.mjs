@@ -1,13 +1,13 @@
 import dotenv from "dotenv/config"
 import express from "express"
 import cors from "cors"
+import nodemailer from "nodemailer"
 import {textValidator,signinValidator} from "./Validator.mjs";
 import {validationResult,checkSchema,matchedData} from "express-validator"
 import mongoose from "mongoose"
 import { Emailrecord,user } from "./Mbschemas.mjs";
 import {hashpassword,compare} from "./Helper.mjs";
 import dns from "dns"
-import {Resend} from "resend"
 dns.setServers(["8.8.8.8","1.1.1.1"])
 
 const app = express();
@@ -31,17 +31,26 @@ app.post("/sendmail",checkSchema(textValidator),async(req,res)=>{
  const body=matchedData(req)
 const emaillist=req.body.emaillist
 console.log("Before email")
+const transporter = nodemailer.createTransport({
+   host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.BREVO_EMAIL,
+    pass: process.env.BREVO_KEY
+  }
+})
 
 new Promise (async function(resolve,reject){
     try{
       for(var i=0;i<emaillist.length;i++)
 {
-  await resend.emails.send({
-    from: "onboarding@resend.dev",
-    to: emaillist[i],
-    subject: body.subject,
-    text: body.msg
-  })
+ await transporter.sendMail({
+  from: "akmirror619@gmail.com",
+  to: emaillist[i],
+  subject: body.subject,
+  text: body.msg
+})
 console.log(`Email sent to : ${emaillist[i]}`)
 
 }
